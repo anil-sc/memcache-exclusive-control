@@ -35,6 +35,7 @@ const env = dotenv.parse(fs.readFileSync('/etc/pic/.env'));
       const key = `/home/pic/backup/org${i}/cid${i}`;
 
       client.get(key, function(err, val) {
+        //console.table(`Processing for - ${key}`);
         if(val == null) {
           // 0 means key will not expires 
           client.set(key, key, {expires:0}, function(err, val) {});
@@ -51,10 +52,9 @@ const env = dotenv.parse(fs.readFileSync('/etc/pic/.env'));
 
           // delete key after writing
           client.delete(key);
+          //console.table(`\nDeleted key= ${key}\n`)
         }else {
-          if(val != null) {
-            client.delete(key);
-          }
+          console.log(`${key} is being processed`);
         }
       });
     }catch (e) {
