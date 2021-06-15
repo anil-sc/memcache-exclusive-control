@@ -36,6 +36,7 @@ const env = dotenv.parse(fs.readFileSync('/etc/pic/.env'));
 
       client.get(key, function(err, val) {
         if(val == null) {
+          // 0 means key will not expires 
           client.set(key, key, {expires:0}, function(err, val) {});
 
           if (fs.existsSync('counter.txt'))
