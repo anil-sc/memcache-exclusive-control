@@ -4,6 +4,8 @@ const os = require("os");
 const memjs = require('memjs');
 import dotenv from 'dotenv';
 const env = dotenv.parse(fs.readFileSync('/etc/pic/.env'));
+// env path
+//MEMCACHE_SERVERS=pic-elasticache-test.bshg37.cfg.apne1.cache.amazonaws.com:11211
 
 (async () => {
   // ID of this process.
@@ -30,7 +32,7 @@ const env = dotenv.parse(fs.readFileSync('/etc/pic/.env'));
     const client = memjs.Client.create(env.MEMCACHE_SERVERS);
     try {
       // create key
-      const key = `key-${i}`;
+      const key = `/home/pic/backup/org${i}/cid${i}`;
 
       client.get(key, function(err, val) {
         if(val == null) {

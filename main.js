@@ -15,4 +15,4 @@ if (fs.existsSync('counter.txt'))
 fork('child.js', ['child1']);
 setTimeout(() => {
   fork('child.js', ['child2']);
-},1000);
+},100);
