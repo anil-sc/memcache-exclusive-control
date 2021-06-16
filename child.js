@@ -7,6 +7,7 @@ const env = dotenv.parse(fs.readFileSync('/etc/pic/.env'));
 // env path
 //MEMCACHE_SERVERS=pic-elasticache-test.bshg37.cfg.apne1.cache.amazonaws.com:11211
 const server = 'pic-elasticache-test.bshg37.cfg.apne1.cache.amazonaws.com:11211';
+const KEY_EXPIRE_TIME = 60000;
 (async () => {
   // ID of this process.
   const pid = process.argv[2]||process.getuid();
@@ -36,7 +37,7 @@ const server = 'pic-elasticache-test.bshg37.cfg.apne1.cache.amazonaws.com:11211'
     // add key that auto expires after 60 seconds
     // if key already exists new value will not be updated, it will give NOT_STORED response
     client
-      .add(key, `path=${key}`, 60000)
+      .add(key, `path=${key}`, KEY_EXPIRE_TIME)
       .then((resp)=> {
           if(resp[0] === 'STORED') {
             console.log(`Locked :${key}`);
