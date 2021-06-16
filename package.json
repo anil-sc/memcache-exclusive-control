@@ -16,5 +16,11 @@
   "bugs": {
     "url": "https://github.com/anil-sc/memcache-exclusive-control/issues"
   },
-  "homepage": "https://github.com/anil-sc/memcache-exclusive-control#readme"
+  "homepage": "https://github.com/anil-sc/memcache-exclusive-control#readme",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "esm": "^3.2.25",
+    "memcache-client": "^0.10.1",
+    "moment": "^2.29.1"
+  }
 }

@@ -8,7 +8,7 @@ if (fs.existsSync('counter.txt'))
 //
 // CASE 1 Start multiple child processes at the same time.
 fork('child.js', ['child1']);
-fork('child.js', ['child2']);
+fork('child.js', ['child1']);
 
 
 // CASE 2 Start multiple child processes after some time delay.
