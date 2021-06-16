@@ -41,27 +41,34 @@ const KEY_EXPIRE_TIME = 60000;
       .then((resp)=> {
           if(resp[0] === 'STORED') {
             console.log(`Locked :${key}`);
-          }
-          try {
-            if (fs.existsSync('counter.txt'))
-              counter = parseInt(fs.readFileSync('counter.txt', 'utf-8'), 10);
+            try {
+              if (fs.existsSync('counter.txt'))
+                counter = parseInt(fs.readFileSync('counter.txt', 'utf-8'), 10);
 
-            // Increment the counter.
-            ++counter;
+              // Increment the counter.
+              ++counter;
 
-            log(`loop=${i}, counter=${counter}`);
+              log(`loop=${i}, counter=${counter}`);
 
-            fs.writeFileSync('counter.txt', (counter).toString(), 'utf-8');
-            console.log(`Complete file write at ${key}`)
-          }finally {
-            console.log(`Delete: ${key}\n`);
-            client.delete(key);
+              fs.writeFileSync('counter.txt', (counter).toString(), 'utf-8');
+              console.log(`Complete file write at ${key}`)
+            } finally {
+              console.log(`Delete: ${key}\n`);
+              client.delete(key);
+            }
+          }else {
+            console.log('Error: key could not be stored');
           }
         }
       )
       .catch(e => {
-        if(e.cmdTokens[0] === 'NOT_STORED') {
-          console.log(`In progress :${key}\n`)
+        try {
+          if(e.cmdTokens[0] === 'NOT_STORED') {
+            console.log(`Another process is processing :${key}\n`);
+          }
+        }catch (e) {
+          // connection error, network error
+          console.log('Error: ',e)
         }
       })
   }
