@@ -36,41 +36,42 @@ const KEY_EXPIRE_TIME = 60000;
 
     // add key that auto expires after 60 seconds
     // if key already exists new value will not be updated, it will give NOT_STORED response
-    client
-      .add(key, `path=${key}`, KEY_EXPIRE_TIME)
-      .then((resp)=> {
-          if(resp[0] === 'STORED') {
-            console.log(`Locked :${key}`);
-            try {
-              if (fs.existsSync('counter.txt'))
-                counter = parseInt(fs.readFileSync('counter.txt', 'utf-8'), 10);
-
-              // Increment the counter.
-              ++counter;
-
-              log(`loop=${i}, counter=${counter}`);
-
-              fs.writeFileSync('counter.txt', (counter).toString(), 'utf-8');
-              console.log(`Complete file write at ${key}`)
-            } finally {
-              console.log(`Delete: ${key}\n`);
-              client.delete(key);
+    try {
+      await new Promise((resolve, reject) => {
+        client
+          .add(key, `path=${key}`, KEY_EXPIRE_TIME)
+          .then((resp)=> {
+              if(resp[0] === 'STORED') {
+                console.log(`Locked :${key}`);
+                try {
+                  if (fs.existsSync('counter.txt'))
+                    counter = parseInt(fs.readFileSync('counter.txt', 'utf-8'), 10);
+                  // Increment the counter.
+                  ++counter;
+                  log(`loop=${i}, counter=${counter}`);
+                  fs.writeFileSync('counter.txt', (counter).toString(), 'utf-8');
+                  console.log(`Complete file write at ${key}`)
+                } finally {
+                  console.log(`Delete: ${key}\n`);
+                  client.delete(key);
+                  resolve();
+                }
+              }else {
+                console.log('Error: key could not be stored');
+                reject(new Error('Error: key could not be stored'));
+              }
             }
-          }else {
-            console.log('Error: key could not be stored');
-          }
-        }
-      )
-      .catch(e => {
-        try {
-          if(e.cmdTokens[0] === 'NOT_STORED') {
-            console.log(`Another process is processing :${key}\n`);
-          }
-        }catch (e) {
-          // connection error, network error
-          console.log('Error: ',e)
-        }
-      })
+          )
+          .catch(e => reject(e));
+      });
+    }
+    catch(e){
+      if(e.name === 'Error' && e.message === 'NOT_STORED') {
+        console.log(`Another process is processing :${key}\n`);
+      }else {
+        console.log(`Memcache add() error :`,e.message);
+      }
+    }
   }
 })();
 
